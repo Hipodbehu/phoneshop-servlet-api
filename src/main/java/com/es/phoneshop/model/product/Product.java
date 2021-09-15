@@ -1,8 +1,9 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.exception.ProductNotFullException;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 
@@ -22,22 +23,7 @@ public class Product {
   private String imageUrl;
   private List<PriceHistory> priceHistories;
 
-  public Product() {
-    priceHistories = new ArrayList<>();
-  }
-
-  public Product(String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
-    this.code = code;
-    this.description = description;
-    this.price = price;
-    this.currency = currency;
-    this.stock = stock;
-    this.imageUrl = imageUrl;
-    priceHistories = new ArrayList<>();
-    priceHistories.add(new PriceHistory(price));
-  }
-
-  public Product(Long id, String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
+  private Product(Long id, String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
     this.id = id;
     this.code = code;
     this.description = description;
@@ -138,5 +124,63 @@ public class Product {
     result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
     result = 31 * result + (priceHistories != null ? priceHistories.hashCode() : 0);
     return result;
+  }
+
+  public static class ProductBuilder {
+    private String code;
+    private String description;
+    private BigDecimal price;
+    private Currency currency;
+    private int stock;
+    private String imageUrl;
+    private Long id;
+
+    public ProductBuilder setCode(String code) {
+      this.code = code;
+      return this;
+    }
+
+    public ProductBuilder setDescription(String description) {
+      this.description = description;
+      return this;
+    }
+
+    public ProductBuilder setPrice(BigDecimal price) {
+      this.price = price;
+      return this;
+    }
+
+    public ProductBuilder setCurrency(Currency currency) {
+      this.currency = currency;
+      return this;
+    }
+
+    public ProductBuilder setStock(int stock) {
+      this.stock = stock;
+      return this;
+    }
+
+    public ProductBuilder setImageUrl(String imageUrl) {
+      this.imageUrl = imageUrl;
+      return this;
+    }
+
+    public ProductBuilder setId(Long id) {
+      this.id = id;
+      return this;
+    }
+
+    public Product createProduct() {
+      if (!isAllRequiredParamsSet()) {
+        throw new ProductNotFullException();
+      }
+      Product product = new Product(id, code, description, price, currency, stock, imageUrl);
+      id = null;
+      return product;
+    }
+
+    private boolean isAllRequiredParamsSet() {
+      return code != null || description != null || currency != null || imageUrl != null;
+    }
   }
 }

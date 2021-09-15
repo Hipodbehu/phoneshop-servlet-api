@@ -9,23 +9,25 @@
         Product history
     </h1>
     <h2>${product.description}</h2>
-    <table>
-        <thead>
-        <tr>
-            <td>StartDate</td>
-            <td>Price</td>
-        </tr>
-        </thead>
-        <c:forEach var="history" items="${product.priceHistories}">
+    <c:if test="${not empty product.priceHistories}">
+        <table>
+            <thead>
             <tr>
-                <td>
-                    ${history.startDate}
-                </td>
-                <td>
-                    <fmt:formatNumber value="${history.price}" type="currency"
-                                      currencySymbol="${product.currency.symbol}"/>
-                </td>
+                <td>StartDate</td>
+                <td>Price</td>
             </tr>
-        </c:forEach>
-    </table>
+            </thead>
+            <c:forEach var="history" items="${product.priceHistories}">
+                <tr>
+                    <td>
+                            ${history.startDate}
+                    </td>
+                    <td>
+                        <fmt:formatNumber value="${history.price}" type="currency"
+                                          currencySymbol="${product.currency.symbol}"/>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </c:if>
 </tags:master>

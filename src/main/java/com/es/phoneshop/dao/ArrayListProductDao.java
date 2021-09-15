@@ -1,4 +1,9 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.dao;
+
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.model.sort.SortField;
+import com.es.phoneshop.model.sort.SortOrder;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -51,18 +56,12 @@ public class ArrayListProductDao implements ProductDao {
     List<Product> productList;
     lock.readLock().lock();
     try {
-      String[] queryWords = (query == null || query.trim().isEmpty())
-              ? null
-              : query.trim().toLowerCase(Locale.ROOT).split("\\s");
-      Comparator<Product> productComparator = getSortOrderComparator(getSortFieldComparator(queryWords, sortField),
-              sortOrder);
+      String[] queryWords = getQueryWords(query);
       productList = products.stream()
               .filter(p -> p.getPrice() != null)
               .filter(p -> p.getStock() > 0)
-              .filter(product -> queryWords == null
-                      || Arrays.stream(queryWords).anyMatch(
-                              s -> product.getDescription().toLowerCase(Locale.ROOT).contains(s)))
-              .sorted(productComparator)
+              .filter(product -> shouldDisplayProduct(queryWords, product))
+              .sorted(getSortOrderComparator(getSortFieldComparator(queryWords, sortField), sortOrder))
               .collect(Collectors.toList());
     } finally {
       lock.readLock().unlock();
@@ -70,11 +69,23 @@ public class ArrayListProductDao implements ProductDao {
     return productList;
   }
 
+  private String[] getQueryWords(String query) {
+    return (query == null || query.trim().isEmpty())
+            ? null
+            : query.trim().toLowerCase(Locale.ROOT).split("\\s");
+  }
+
+  private boolean shouldDisplayProduct(String[] queryWords, Product product) {
+    return queryWords == null
+            || Arrays.stream(queryWords).anyMatch(
+            s -> product.getDescription().toLowerCase(Locale.ROOT).contains(s));
+  }
+
   private Comparator<Product> getSortFieldComparator(String[] query, SortField sortField) {
     Comparator<Product> comparator;
     if (sortField == null) {
       comparator = Comparator.comparingLong(o -> getCountOfMatches(query, o));
-    } else if (SortField.description == sortField) {
+    } else if (SortField.DESCRIPTION == sortField) {
       comparator = Comparator.comparing(Product::getDescription);
     } else {
       comparator = Comparator.comparing(Product::getPrice);
@@ -83,7 +94,7 @@ public class ArrayListProductDao implements ProductDao {
   }
 
   private Comparator<Product> getSortOrderComparator(Comparator<Product> comparator, SortOrder sortOrder) {
-    if (sortOrder == null || SortOrder.desc == sortOrder) {
+    if (sortOrder == null || SortOrder.DESC == sortOrder) {
       comparator = comparator.reversed();
     }
     return comparator;

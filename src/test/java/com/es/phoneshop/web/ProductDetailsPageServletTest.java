@@ -1,6 +1,6 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.dao.ArrayListProductDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +32,9 @@ public class ProductDetailsPageServletTest {
   private ProductDetailsPageServlet servlet = new ProductDetailsPageServlet();
 
   @Before
-  public void setup() throws ServletException {
+  public void setup() {
     when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+    when(request.getRequestURI()).thenReturn("/product");
     when(request.getPathInfo()).thenReturn("/1");
   }
 

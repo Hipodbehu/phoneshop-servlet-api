@@ -1,9 +1,9 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.product.ArrayListProductDao;
-import com.es.phoneshop.model.product.ProductDao;
-import com.es.phoneshop.model.product.SortField;
-import com.es.phoneshop.model.product.SortOrder;
+import com.es.phoneshop.dao.ArrayListProductDao;
+import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.model.sort.SortField;
+import com.es.phoneshop.model.sort.SortOrder;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Locale;
 
 public class ProductListPageServlet extends HttpServlet {
   private ProductDao productDao;
@@ -31,11 +32,11 @@ public class ProductListPageServlet extends HttpServlet {
 
   private SortField getSortField(HttpServletRequest request) {
     String sortField = request.getParameter("sort");
-    return sortField != null ? SortField.valueOf(sortField) : null;
+    return sortField != null ? SortField.valueOf(sortField.toUpperCase(Locale.ROOT)) : null;
   }
 
   private SortOrder getSortOrder(HttpServletRequest request) {
     String sortOrder = request.getParameter("order");
-    return sortOrder != null ? SortOrder.valueOf(sortOrder) : null;
+    return sortOrder != null ? SortOrder.valueOf(sortOrder.toUpperCase(Locale.ROOT)) : null;
   }
 }
