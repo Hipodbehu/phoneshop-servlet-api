@@ -1,40 +1,103 @@
 package com.es.phoneshop.model.product;
 
-import org.junit.Before;
+import com.es.phoneshop.dao.ArrayListProductDao;
+import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.model.sort.SortField;
+import com.es.phoneshop.model.sort.SortOrder;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class ArrayListProductDaoTest {
-  private ProductDao productDao;
+  private static ProductDao productDao;
+  private static Currency usd;
+  private static Product.ProductBuilder productBuilder;
 
-  @Before
-  public void setup() {
-    productDao = new ArrayListProductDao();
+  @BeforeClass
+  public static void setup() {
+    productDao = ArrayListProductDao.getInstance();
+    usd = Currency.getInstance("USD");
+    productBuilder = new Product.ProductBuilder();
+    setTestData();
+  }
+
+  private static void setTestData() {
+    productDao.save(productBuilder.setCode("sgs2").setDescription("Samsung Galaxy S II").setPrice(new BigDecimal(200)).setCurrency(usd).setStock(2).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg").createProduct());
+    productDao.save(productBuilder.setCode("sgs3").setDescription("Samsung Galaxy S III").setPrice(new BigDecimal(300)).setCurrency(usd).setStock(5).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg").createProduct());
+    productDao.save(productBuilder.setCode("iphone").setDescription("Apple iPhone").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(10).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg").createProduct());
   }
 
   @Test
   public void testFindProducts() {
-    assertFalse(productDao.findProducts().isEmpty());
+    List<Product> testList = new ArrayList<>();
+    testList.add(productBuilder.setId(1L).setCode("sgs2").setDescription("Samsung Galaxy S II").setPrice(new BigDecimal(200)).setCurrency(usd).setStock(2).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg").createProduct());
+    testList.add(productBuilder.setId(2L).setCode("sgs3").setDescription("Samsung Galaxy S III").setPrice(new BigDecimal(300)).setCurrency(usd).setStock(5).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg").createProduct());
+    testList.removeAll(productDao.findProducts("Samsung", null, null));
+    assertTrue(testList.isEmpty());
+  }
+
+  @Test
+  public void testFindProductsNullQuery() {
+    assertFalse(productDao.findProducts(null, null, null).isEmpty());
   }
 
   @Test
   public void testFindProductsWithZeroStock() {
-    Currency usd = Currency.getInstance("USD");
-    Product product = new Product("test-code", "test-description", new BigDecimal(100), usd, 0, "test-url");
+    Product product = productBuilder.setCode("test-code").setDescription("test-description").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(0).setImageUrl("test-url").createProduct();
     productDao.save(product);
-    assertFalse(productDao.findProducts().contains(product));
+    assertFalse(productDao.findProducts(null, null, null).contains(product));
+    productDao.delete(product.getId());
   }
 
   @Test
   public void testFindProductsWithNullPrice() {
-    Currency usd = Currency.getInstance("USD");
-    Product product = new Product("test-code", "test-description", null, usd, 100, "test-url");
+    Product product = productBuilder.setCode("test-code").setDescription("test-description").setPrice(null).setCurrency(usd).setStock(100).setImageUrl("test-url").createProduct();
     productDao.save(product);
-    assertFalse(productDao.findProducts().contains(product));
+    assertFalse(productDao.findProducts(null, null, null).contains(product));
+    productDao.delete(product.getId());
+  }
+
+  @Test
+  public void testSortProductsDescending() {
+    List<Product> testList = new ArrayList<>();
+    testList.add(productBuilder.setId(3L).setCode("iphone").setDescription("Apple iPhone").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(10).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg").createProduct());
+    testList.add(productBuilder.setId(1L).setCode("sgs2").setDescription("Samsung Galaxy S II").setPrice(new BigDecimal(200)).setCurrency(usd).setStock(2).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg").createProduct());
+    testList.add(productBuilder.setId(2L).setCode("sgs3").setDescription("Samsung Galaxy S III").setPrice(new BigDecimal(300)).setCurrency(usd).setStock(5).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg").createProduct());
+    assertEquals(testList, productDao.findProducts("h A", null, null));
+  }
+
+  @Test
+  public void testSortProductsAscending() {
+    List<Product> testList = new ArrayList<>();
+    testList.add(productBuilder.setId(1L).setCode("sgs2").setDescription("Samsung Galaxy S II").setPrice(new BigDecimal(200)).setCurrency(usd).setStock(2).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg").createProduct());
+    testList.add(productBuilder.setId(2L).setCode("sgs3").setDescription("Samsung Galaxy S III").setPrice(new BigDecimal(300)).setCurrency(usd).setStock(5).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg").createProduct());
+    testList.add(productBuilder.setId(3L).setCode("iphone").setDescription("Apple iPhone").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(10).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg").createProduct());
+    assertEquals(testList, productDao.findProducts("h A", null, SortOrder.ASC));
+  }
+
+  @Test
+  public void testSortProductsByDescriptionDescending() {
+    List<Product> testList = new ArrayList<>();
+    testList.add(productBuilder.setId(2L).setCode("sgs3").setDescription("Samsung Galaxy S III").setPrice(new BigDecimal(300)).setCurrency(usd).setStock(5).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg").createProduct());
+    testList.add(productBuilder.setId(1L).setCode("sgs2").setDescription("Samsung Galaxy S II").setPrice(new BigDecimal(200)).setCurrency(usd).setStock(2).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg").createProduct());
+    testList.add(productBuilder.setId(3L).setCode("iphone").setDescription("Apple iPhone").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(10).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg").createProduct());
+    assertEquals(testList, productDao.findProducts("", SortField.DESCRIPTION, null));
+  }
+
+  @Test
+  public void testSortProductsByPriceDescending() {
+    List<Product> testList = new ArrayList<>();
+    testList.add(productBuilder.setId(2L).setCode("sgs3").setDescription("Samsung Galaxy S III").setPrice(new BigDecimal(300)).setCurrency(usd).setStock(5).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg").createProduct());
+    testList.add(productBuilder.setId(1L).setCode("sgs2").setDescription("Samsung Galaxy S II").setPrice(new BigDecimal(200)).setCurrency(usd).setStock(2).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg").createProduct());
+    testList.add(productBuilder.setId(3L).setCode("iphone").setDescription("Apple iPhone").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(10).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg").createProduct());
+    assertEquals(testList, productDao.findProducts("", SortField.DESCRIPTION, null));
   }
 
   @Test
@@ -42,37 +105,39 @@ public class ArrayListProductDaoTest {
     assertNotNull(productDao.getProduct(1L));
   }
 
-  @Test (expected = ProductNotFoundException.class)
+  @Test(expected = ProductNotFoundException.class)
   public void testGetProductNotFound() throws ProductNotFoundException {
-    assertNotNull(productDao.getProduct(null));
+    productDao.getProduct(null);
   }
 
   @Test
   public void testSaveNewProduct() throws ProductNotFoundException {
-    Currency usd = Currency.getInstance("USD");
-    Product product = new Product("test-code", "test-description", new BigDecimal(100), usd, 100, "test-url");
+    Product product = productBuilder.setCode("test-code").setDescription("test-description").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(100).setImageUrl("test-url").createProduct();
 
     productDao.save(product);
     assertTrue(product.getId() >= 0);
     Product actual = productDao.getProduct(product.getId());
     assertEquals("test-code", actual.getCode());
+    productDao.delete(product.getId());
   }
 
   @Test
   public void testSaveUpdateProduct() throws ProductNotFoundException {
-    Currency usd = Currency.getInstance("USD");
-    Product product = new Product("test-code", "test-description", new BigDecimal(100), usd, 100, "test-url");
+    Product product = productBuilder.setCode("test-code").setDescription("test-description").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(100).setImageUrl("test-url").createProduct();
     productDao.save(product);
-    Product productUpdate = new Product(product.getId(), "updated-code", "updated-description", new BigDecimal(10), usd, 10, "updated-url");
+    Product productUpdate = productBuilder.setId(product.getId()).setCode("updated-code").setDescription("updated-description").setPrice(new BigDecimal(10)).setCurrency(usd).setStock(10).setImageUrl("updated-url").createProduct();
     productDao.save(productUpdate);
     Product actual = productDao.getProduct(product.getId());
     assertEquals("updated-code", actual.getCode());
+    productDao.delete(productUpdate.getId());
   }
 
-  @Test (expected = ProductNotFoundException.class)
+  @Test(expected = ProductNotFoundException.class)
   public void testDeleteProduct() throws ProductNotFoundException {
-    productDao.getProduct(1L);
-    productDao.delete(1L);
-    productDao.getProduct(1L);
+    Product product = productBuilder.setCode("test-code").setDescription("test-description").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(100).setImageUrl("test-url").createProduct();
+    productDao.save(product);
+    productDao.getProduct(product.getId());
+    productDao.delete(product.getId());
+    productDao.getProduct(product.getId());
   }
 }
