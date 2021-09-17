@@ -9,7 +9,7 @@
         Welcome to Expert-Soft training!
     </h1>
     <form>
-        <input name="query" value="${param.query}">
+        <input class="query" name="query" value="${param.query}"/>
         <button>Search</button>
     </form>
     <table>
@@ -45,4 +45,5 @@
             </tr>
         </c:forEach>
     </table>
+    <jsp:include page="recentlyViewed.jsp"/>
 </tags:master>

@@ -44,7 +44,7 @@ public class ProductListPageServletTest {
 
   @Test
   public void testSetAttributes() throws ServletException, IOException {
-    verify(request).setAttribute(eq("products"), any());
     servlet.doGet(request, response);
+    verify(request).setAttribute(eq("products"), any());
   }
 }

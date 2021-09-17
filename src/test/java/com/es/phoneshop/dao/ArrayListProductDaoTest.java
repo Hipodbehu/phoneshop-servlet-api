@@ -1,10 +1,10 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.dao;
 
-import com.es.phoneshop.dao.ArrayListProductDao;
-import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.sort.SortField;
 import com.es.phoneshop.model.sort.SortOrder;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -17,21 +17,36 @@ import static org.junit.Assert.*;
 
 public class ArrayListProductDaoTest {
   private static ProductDao productDao;
+  private static List<Product> productList;
   private static Currency usd;
   private static Product.ProductBuilder productBuilder;
 
   @BeforeClass
   public static void setup() {
     productDao = ArrayListProductDao.getInstance();
+    productList = new ArrayList<>();
     usd = Currency.getInstance("USD");
     productBuilder = new Product.ProductBuilder();
     setTestData();
   }
 
   private static void setTestData() {
-    productDao.save(productBuilder.setCode("sgs2").setDescription("Samsung Galaxy S II").setPrice(new BigDecimal(200)).setCurrency(usd).setStock(2).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg").createProduct());
-    productDao.save(productBuilder.setCode("sgs3").setDescription("Samsung Galaxy S III").setPrice(new BigDecimal(300)).setCurrency(usd).setStock(5).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg").createProduct());
-    productDao.save(productBuilder.setCode("iphone").setDescription("Apple iPhone").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(10).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg").createProduct());
+    Product product = productBuilder.setCode("sgs2").setDescription("Samsung Galaxy S II").setPrice(new BigDecimal(200)).setCurrency(usd).setStock(2).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg").createProduct();
+    productList.add(product);
+    productDao.save(product);
+    product = productBuilder.setCode("sgs3").setDescription("Samsung Galaxy S III").setPrice(new BigDecimal(300)).setCurrency(usd).setStock(5).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg").createProduct();
+    productList.add(product);
+    productDao.save(product);
+    product = productBuilder.setCode("iphone").setDescription("Apple iPhone").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(10).setImageUrl("https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Apple/Apple%20iPhone.jpg").createProduct();
+    productList.add(product);
+    productDao.save(product);
+  }
+
+  @After
+  public void clear() {
+    List<Product> products = productDao.findProducts(null, null, null);
+    products.removeAll(productList);
+    products.forEach(product -> productDao.delete(product.getId()));
   }
 
   @Test
@@ -118,7 +133,6 @@ public class ArrayListProductDaoTest {
     assertTrue(product.getId() >= 0);
     Product actual = productDao.getProduct(product.getId());
     assertEquals("test-code", actual.getCode());
-    productDao.delete(product.getId());
   }
 
   @Test
@@ -129,14 +143,12 @@ public class ArrayListProductDaoTest {
     productDao.save(productUpdate);
     Product actual = productDao.getProduct(product.getId());
     assertEquals("updated-code", actual.getCode());
-    productDao.delete(productUpdate.getId());
   }
 
   @Test(expected = ProductNotFoundException.class)
   public void testDeleteProduct() throws ProductNotFoundException {
     Product product = productBuilder.setCode("test-code").setDescription("test-description").setPrice(new BigDecimal(100)).setCurrency(usd).setStock(100).setImageUrl("test-url").createProduct();
     productDao.save(product);
-    productDao.getProduct(product.getId());
     productDao.delete(product.getId());
     productDao.getProduct(product.getId());
   }

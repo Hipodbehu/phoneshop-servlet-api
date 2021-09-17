@@ -30,4 +30,5 @@
             </c:forEach>
         </table>
     </c:if>
+    <jsp:include page="recentlyViewed.jsp"/>
 </tags:master>
