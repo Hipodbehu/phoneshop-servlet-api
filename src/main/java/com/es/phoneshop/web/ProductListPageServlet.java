@@ -14,6 +14,11 @@ import java.io.IOException;
 import java.util.Locale;
 
 public class ProductListPageServlet extends HttpServlet {
+  public static final String QUERY_PARAMETER = "query";
+  public static final String PRODUCTS_ATTRIBUTE = "products";
+  public static final String PRODUCT_LIST_PAGE = "/WEB-INF/pages/productList.jsp";
+  public static final String SORT_PARAMETER = "sort";
+  public static final String ORDER_PARAMETER = "order";
   private ProductDao productDao;
 
   @Override
@@ -24,19 +29,19 @@ public class ProductListPageServlet extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String query = request.getParameter("query");
-    request.setAttribute("products", productDao.findProducts(query,
+    String query = request.getParameter(QUERY_PARAMETER);
+    request.setAttribute(PRODUCTS_ATTRIBUTE, productDao.findProducts(query,
             getSortField(request), getSortOrder(request)));
-    request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
+    request.getRequestDispatcher(PRODUCT_LIST_PAGE).forward(request, response);
   }
 
   private SortField getSortField(HttpServletRequest request) {
-    String sortField = request.getParameter("sort");
+    String sortField = request.getParameter(SORT_PARAMETER);
     return sortField != null ? SortField.valueOf(sortField.toUpperCase(Locale.ROOT)) : null;
   }
 
   private SortOrder getSortOrder(HttpServletRequest request) {
-    String sortOrder = request.getParameter("order");
+    String sortOrder = request.getParameter(ORDER_PARAMETER);
     return sortOrder != null ? SortOrder.valueOf(sortOrder.toUpperCase(Locale.ROOT)) : null;
   }
 }
