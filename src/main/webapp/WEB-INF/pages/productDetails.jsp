@@ -5,13 +5,13 @@
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
 <tags:master pageTitle="Product Details">
-    <h1>
-        Product details
-    </h1>
     <p>
         Cart: ${cart}
     </p>
-    <c:if test="${not empty param.message && empty error}">
+    <h1>
+        Product details
+    </h1>
+    <c:if test="${not empty param.message}">
         <div class="success">
             ${param.message}
         </div>
@@ -21,7 +21,7 @@
             ${error}
         </div>
     </c:if>
-    <form method="post">
+    <form method="post" action="${pageContext.servletContext.contextPath}/products/${product.id}">
         <table>
             <tr>
                 <td>Image</td>
@@ -63,6 +63,7 @@
                             ${error}
                         </div>
                     </c:if>
+                    <input type="hidden" name="productId" value="${product.id}">
                 </td>
             </tr>
         </table>

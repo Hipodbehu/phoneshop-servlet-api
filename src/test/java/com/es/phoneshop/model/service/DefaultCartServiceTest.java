@@ -14,7 +14,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class DefaultCartServiceTest {
@@ -39,13 +39,8 @@ public class DefaultCartServiceTest {
   }
 
   @Test
-  public void testGetCart() {
-    assertNotNull(cartService.getCart());
-  }
-
-  @Test
   public void testAdd() throws OutOfStockException, BadQuantityException {
-    Cart cart = cartService.getCart();
+    Cart cart = new Cart();
     cartService.add(cart, 1L, 3);
     Product testProduct = productDao.getProduct(1L);
     CartItem cartItem = new CartItem(testProduct, 3);
@@ -55,7 +50,7 @@ public class DefaultCartServiceTest {
 
   @Test
   public void testAddSum() throws OutOfStockException, BadQuantityException {
-    Cart cart = cartService.getCart();
+    Cart cart = new Cart();
     cartService.add(cart, 1L, 3);
     cartService.add(cart, 1L, 3);
     Product testProduct = productDao.getProduct(1L);
@@ -66,13 +61,46 @@ public class DefaultCartServiceTest {
 
   @Test(expected = OutOfStockException.class)
   public void testAddOutOfStock() throws OutOfStockException, BadQuantityException {
-    Cart cart = cartService.getCart();
+    Cart cart = new Cart();
     cartService.add(cart, 1L, Integer.MAX_VALUE);
   }
 
   @Test(expected = ProductNotFoundException.class)
   public void testAddProductNotFound() throws OutOfStockException, BadQuantityException {
-    Cart cart = cartService.getCart();
+    Cart cart = new Cart();
     cartService.add(cart, 0L, 3);
+  }
+
+  @Test
+  public void testUpdate() throws OutOfStockException, BadQuantityException {
+    Cart cart = new Cart();
+    cartService.add(cart, 1L, 1);
+    cartService.update(cart, 1L, 3);
+    Product testProduct = productDao.getProduct(1L);
+    CartItem cartItem = new CartItem(testProduct, 3);
+    cart.getCartItemList().remove(cartItem);
+    assertTrue(cart.getCartItemList().isEmpty());
+  }
+
+  @Test(expected = OutOfStockException.class)
+  public void testUpdateOutOfStock() throws OutOfStockException, BadQuantityException {
+    Cart cart = new Cart();
+    cartService.add(cart, 1L, 1);
+    cartService.update(cart, 1L, Integer.MAX_VALUE);
+  }
+
+  @Test(expected = ProductNotFoundException.class)
+  public void testUpdateProductNotFound() throws OutOfStockException, BadQuantityException {
+    Cart cart = new Cart();
+    cartService.update(cart, 0L, 3);
+  }
+
+  @Test
+  public void testDelete() throws BadQuantityException, OutOfStockException {
+    Cart cart = new Cart();
+    cartService.add(cart, 1L, 1);
+    CartItem testItem = cart.getCartItemList().get(0);
+    cartService.delete(cart, 1L);
+    assertFalse(cart.getCartItemList().contains(testItem));
   }
 }

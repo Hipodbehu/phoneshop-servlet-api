@@ -5,6 +5,9 @@
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
 <tags:master pageTitle="Product History">
+    <p>
+        Cart: ${cart}
+    </p>
     <h1>
         Product history
     </h1>

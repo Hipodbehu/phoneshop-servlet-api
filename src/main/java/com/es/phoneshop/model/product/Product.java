@@ -2,12 +2,13 @@ package com.es.phoneshop.model.product;
 
 import com.es.phoneshop.exception.ProductNotFullException;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
-public class Product {
+public class Product implements Serializable {
   private Long id;
   private String code;
   private String description;

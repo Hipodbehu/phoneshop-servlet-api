@@ -1,6 +1,5 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.ArrayListProductDao;
 import com.es.phoneshop.model.service.CartService;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,12 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Locale;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProductListPageServletTest {
+public class CartPageServletTest {
   @Mock
   private HttpServletRequest request;
   @Mock
@@ -29,11 +28,9 @@ public class ProductListPageServletTest {
   @Mock
   private RequestDispatcher requestDispatcher;
   @Mock
-  private ArrayListProductDao productDao;
-  @Mock
   private CartService cartService;
   @InjectMocks
-  private ProductListPageServlet servlet = new ProductListPageServlet();
+  private CartPageServlet servlet = new CartPageServlet();
 
   @Before
   public void setup() throws ServletException {
@@ -49,15 +46,8 @@ public class ProductListPageServletTest {
 
   @Test
   public void testDoPost() throws ServletException, IOException {
-    when(request.getParameter(anyString())).thenReturn("0");
     when(request.getParameterValues(anyString())).thenReturn(new String[]{"1"});
     servlet.doPost(request, response);
     verify(request).getContextPath();
-  }
-
-  @Test
-  public void testSetAttributes() throws ServletException, IOException {
-    servlet.doGet(request, response);
-    verify(request).setAttribute(eq("products"), any());
   }
 }
