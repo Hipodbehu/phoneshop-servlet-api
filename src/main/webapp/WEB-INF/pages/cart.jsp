@@ -5,7 +5,7 @@
 
 <tags:master pageTitle="Product List">
     <h1>
-        Cart ${cart}
+        Cart
     </h1>
     <c:if test="${not empty param.message}">
         <div class="success">

@@ -38,8 +38,8 @@ public class ProductDetailsPageServlet extends HttpServlet {
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
-    productDao = ArrayListProductDao.getInstance();
-    cartService = DefaultCartService.getInstance();
+    this.productDao = ArrayListProductDao.getInstance();
+    this.cartService = DefaultCartService.getInstance();
   }
 
   @Override
@@ -83,7 +83,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
       doGet(request, response);
       return;
     }
-    response.sendRedirect(request.getContextPath() + "/cart" + "?message=" + SUCCESS_MESSAGE);
+    response.sendRedirect(request.getContextPath() + "/products/" + idParam + "?message=" + SUCCESS_MESSAGE);
   }
 
   private void addToRecentlyViewed(Queue<Product> products, Product product) {

@@ -9,6 +9,8 @@ import com.es.phoneshop.model.service.CartService;
 import com.es.phoneshop.model.service.DefaultCartService;
 import com.es.phoneshop.model.sort.SortField;
 import com.es.phoneshop.model.sort.SortOrder;
+import com.es.phoneshop.web.helper.DefaultParseHelper;
+import com.es.phoneshop.web.helper.ParseHelper;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -36,12 +38,14 @@ public class ProductListPageServlet extends HttpServlet {
   public static final String BAD_QUANTITY_MESSAGE = "Bad quantity";
   private ProductDao productDao;
   private CartService cartService;
+  private ParseHelper parseHelper;
 
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     this.productDao = ArrayListProductDao.getInstance();
     this.cartService = DefaultCartService.getInstance();
+    this.parseHelper = DefaultParseHelper.getInstance();
   }
 
   @Override
@@ -59,7 +63,7 @@ public class ProductListPageServlet extends HttpServlet {
     try {
       long id = Long.parseLong(idParam);
       String quantityParam = request.getParameterValues(QUANTITY_PARAMETER)[Integer.parseInt(indexParam)];
-      int quantity = parseQuantity(request, quantityParam);
+      int quantity = parseHelper.parseQuantity(request, quantityParam);
       cartService.add(cartService.getCart(request), id, quantity);
     } catch (NumberFormatException exception) {
       throw new ProductNotFoundException(idParam, exception);
@@ -79,7 +83,7 @@ public class ProductListPageServlet extends HttpServlet {
       doGet(request, response);
       return;
     }
-    response.sendRedirect(request.getContextPath() + "/cart" + "?message=" + SUCCESS_MESSAGE);
+    response.sendRedirect(request.getContextPath() + "/products" + "?message=" + SUCCESS_MESSAGE);
   }
 
   private SortField getSortField(HttpServletRequest request) {
@@ -90,10 +94,5 @@ public class ProductListPageServlet extends HttpServlet {
   private SortOrder getSortOrder(HttpServletRequest request) {
     String sortOrder = request.getParameter(ORDER_PARAMETER);
     return sortOrder != null ? SortOrder.valueOf(sortOrder.toUpperCase(Locale.ROOT)) : null;
-  }
-
-  private int parseQuantity(HttpServletRequest request, String quantityParam) throws ParseException {
-    NumberFormat numberFormat = NumberFormat.getInstance(request.getLocale());
-    return numberFormat.parse(quantityParam).intValue();
   }
 }

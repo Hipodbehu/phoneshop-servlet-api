@@ -5,6 +5,8 @@ import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.service.CartService;
 import com.es.phoneshop.model.service.DefaultCartService;
+import com.es.phoneshop.web.helper.DefaultParseHelper;
+import com.es.phoneshop.web.helper.ParseHelper;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -27,11 +29,13 @@ public class CartPageServlet extends HttpServlet {
   public static final String QUANTITY_PARAMETER = "quantity";
   public static final String ERRORS_ATTRIBUTE = "errors";
   private CartService cartService;
+  private ParseHelper parseHelper;
 
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
-    cartService = DefaultCartService.getInstance();
+    this.cartService = DefaultCartService.getInstance();
+    this.parseHelper = DefaultParseHelper.getInstance();
   }
 
   @Override
@@ -49,7 +53,7 @@ public class CartPageServlet extends HttpServlet {
       for (int i = 0; i < productIds.length; i++) {
         try {
           long id = Long.parseLong(productIds[i]);
-          int quantity = parseQuantity(request, quantities[i]);
+          int quantity = parseHelper.parseQuantity(request, quantities[i]);
           cartService.update(cartService.getCart(request), id, quantity);
         } catch (NumberFormatException exception) {
           throw new ProductNotFoundException(productIds[i], exception);
@@ -70,10 +74,5 @@ public class CartPageServlet extends HttpServlet {
       request.setAttribute(ERRORS_ATTRIBUTE, errors);
       doGet(request, response);
     }
-  }
-
-  private int parseQuantity(HttpServletRequest request, String quantityParam) throws ParseException {
-    NumberFormat numberFormat = NumberFormat.getInstance(request.getLocale());
-    return numberFormat.parse(quantityParam).intValue();
   }
 }
