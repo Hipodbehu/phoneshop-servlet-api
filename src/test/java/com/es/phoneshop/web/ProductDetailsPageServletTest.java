@@ -2,7 +2,6 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.dao.ArrayListProductDao;
 import com.es.phoneshop.exception.ProductNotFoundException;
-import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.service.CartService;
 import org.junit.Before;
@@ -52,7 +51,6 @@ public class ProductDetailsPageServletTest {
     when(request.getLocale()).thenReturn(new Locale("us"));
     when(request.getSession()).thenReturn(session);
     when(session.getAttribute("recentlyViewed")).thenReturn(new ArrayDeque<>());
-    when(session.getAttribute(contains(".cart"))).thenReturn(new Cart());
     when(productDao.getProduct(anyLong())).thenReturn(product);
   }
 
@@ -79,7 +77,6 @@ public class ProductDetailsPageServletTest {
   public void testSetAttributes() throws ServletException, IOException {
     servlet.doGet(request, response);
     verify(request).setAttribute(eq("product"), any());
-    verify(request).setAttribute(eq("cart"), any());
   }
 
   @Test

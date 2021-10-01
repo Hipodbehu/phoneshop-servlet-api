@@ -7,11 +7,15 @@
   <link href='http://fonts.googleapis.com/css?family=Lobster+Two' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/styles/main.css">
 </head>
+
 <body class="product-list">
   <header>
     <a href="${pageContext.servletContext.contextPath}">
       <img src="${pageContext.servletContext.contextPath}/images/logo.svg"/>
       PhoneShop
+    </a><br/>
+    <a style="font-size: 40px" href="${pageContext.servletContext.contextPath}/cart">
+      Cart: ${cart.totalQuantity} items
     </a>
   </header>
   <main>
