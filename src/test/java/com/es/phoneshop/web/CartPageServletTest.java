@@ -1,6 +1,7 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.cart.service.CartService;
+import com.es.phoneshop.web.helper.ParseHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,13 +30,14 @@ public class CartPageServletTest {
   private RequestDispatcher requestDispatcher;
   @Mock
   private CartService cartService;
+  @Mock
+  private ParseHelper parseHelper;
   @InjectMocks
   private CartPageServlet servlet = new CartPageServlet();
 
   @Before
   public void setup() throws ServletException {
     when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-    when(request.getLocale()).thenReturn(new Locale("us"));
   }
 
   @Test
