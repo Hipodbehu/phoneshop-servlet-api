@@ -1,13 +1,13 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.ArrayListProductDao;
-import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.BadQuantityException;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.model.cart.service.CartService;
+import com.es.phoneshop.model.cart.service.DefaultCartService;
 import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.model.service.CartService;
-import com.es.phoneshop.model.service.DefaultCartService;
+import com.es.phoneshop.model.product.dao.ArrayListProductDao;
+import com.es.phoneshop.model.product.dao.ProductDao;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -78,7 +78,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
       request.setAttribute(ERROR_ATTRIBUTE, NOT_A_NUMBER_MESSAGE);
       doGet(request, response);
       return;
-    } catch (BadQuantityException e) {
+    } catch (BadQuantityException exception) {
       request.setAttribute(ERROR_ATTRIBUTE, BAD_QUANTITY_MESSAGE);
       doGet(request, response);
       return;

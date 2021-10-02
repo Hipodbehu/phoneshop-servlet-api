@@ -7,7 +7,8 @@ import java.text.ParseException;
 public class DefaultParseHelper implements ParseHelper {
   private static volatile DefaultParseHelper instance;
 
-  private DefaultParseHelper() {}
+  private DefaultParseHelper() {
+  }
 
   public static DefaultParseHelper getInstance() {
     DefaultParseHelper localInstance = instance;

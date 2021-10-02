@@ -1,12 +1,12 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.ArrayListProductDao;
-import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.BadQuantityException;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.exception.ProductNotFoundException;
-import com.es.phoneshop.model.service.CartService;
-import com.es.phoneshop.model.service.DefaultCartService;
+import com.es.phoneshop.model.cart.service.CartService;
+import com.es.phoneshop.model.cart.service.DefaultCartService;
+import com.es.phoneshop.model.product.dao.ArrayListProductDao;
+import com.es.phoneshop.model.product.dao.ProductDao;
 import com.es.phoneshop.model.sort.SortField;
 import com.es.phoneshop.model.sort.SortOrder;
 import com.es.phoneshop.web.helper.DefaultParseHelper;
@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
@@ -77,7 +76,7 @@ public class ProductListPageServlet extends HttpServlet {
       request.setAttribute(PRODUCT_ID_PARAMETER, idParam);
       doGet(request, response);
       return;
-    } catch (BadQuantityException e) {
+    } catch (BadQuantityException exception) {
       request.setAttribute(ERROR_ATTRIBUTE, BAD_QUANTITY_MESSAGE);
       request.setAttribute(PRODUCT_ID_PARAMETER, idParam);
       doGet(request, response);

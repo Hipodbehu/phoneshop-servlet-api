@@ -1,8 +1,8 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.cart.service.CartService;
-import com.es.phoneshop.model.product.dao.ArrayListProductDao;
-import com.es.phoneshop.web.helper.ParseHelper;
+import com.es.phoneshop.model.order.Order;
+import com.es.phoneshop.model.order.service.OrderService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,12 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProductListPageServletTest {
+public class CheckoutPageServletTest {
   @Mock
   private HttpServletRequest request;
   @Mock
@@ -29,17 +30,19 @@ public class ProductListPageServletTest {
   @Mock
   private RequestDispatcher requestDispatcher;
   @Mock
-  private ArrayListProductDao productDao;
-  @Mock
   private CartService cartService;
   @Mock
-  private ParseHelper parseHelper;
+  private OrderService orderService;
   @InjectMocks
-  private ProductListPageServlet servlet = new ProductListPageServlet();
+  private CheckoutPageServlet servlet = new CheckoutPageServlet();
 
   @Before
-  public void setup() throws ServletException {
+  public void setup() {
     when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+    when(orderService.getOrder(any())).thenReturn(new Order());
+    when(request.getParameter(anyString())).thenReturn("1");
+    when(request.getParameter("deliveryDate")).thenReturn("2022-10-10");
+    when(request.getParameter("paymentMethod")).thenReturn("CASH");
   }
 
   @Test
@@ -50,15 +53,14 @@ public class ProductListPageServletTest {
 
   @Test
   public void testDoPost() throws ServletException, IOException {
-    when(request.getParameter(anyString())).thenReturn("0");
-    when(request.getParameterValues(anyString())).thenReturn(new String[]{"1"});
     servlet.doPost(request, response);
     verify(request).getContextPath();
   }
 
   @Test
-  public void testSetAttributes() throws ServletException, IOException {
-    servlet.doGet(request, response);
-    verify(request).setAttribute(eq("products"), any());
+  public void testDoPostWrongParameter() throws ServletException, IOException {
+    when(request.getParameter("deliveryDate")).thenReturn("2020-10-10");
+    servlet.doPost(request, response);
+    verify(request).getRequestDispatcher(anyString());
   }
 }

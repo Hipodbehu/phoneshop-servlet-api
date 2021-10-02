@@ -1,6 +1,6 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.service.CartService;
+import com.es.phoneshop.model.cart.service.CartService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
