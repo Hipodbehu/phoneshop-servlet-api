@@ -1,7 +1,7 @@
 package com.es.phoneshop.web.filter;
 
-import com.es.phoneshop.model.service.CartService;
-import com.es.phoneshop.model.service.DefaultCartService;
+import com.es.phoneshop.model.cart.service.CartService;
+import com.es.phoneshop.model.cart.service.DefaultCartService;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

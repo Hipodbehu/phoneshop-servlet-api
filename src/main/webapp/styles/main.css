@@ -12,6 +12,10 @@ header img {
   max-width: 64px;
 }
 
+.cart {
+  font-size: 40px;
+}
+
 table {
   border-collapse: collapse;
   border : 1px solid gray;

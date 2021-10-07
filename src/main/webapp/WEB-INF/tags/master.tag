@@ -14,9 +14,12 @@
       <img src="${pageContext.servletContext.contextPath}/images/logo.svg"/>
       PhoneShop
     </a><br/>
-    <a style="font-size: 40px" href="${pageContext.servletContext.contextPath}/cart">
-      Cart: ${cart.totalQuantity} items
+    <a class="cart" href="${pageContext.servletContext.contextPath}/cart">
+      Cart:
     </a>
+    <span class="cart">
+      ${cart.totalQuantity} items
+    </span>
   </header>
   <main>
     <jsp:doBody/>

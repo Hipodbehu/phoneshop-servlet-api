@@ -1,12 +1,12 @@
-package com.es.phoneshop.model.service;
+package com.es.phoneshop.model.cart.service;
 
-import com.es.phoneshop.dao.ArrayListProductDao;
-import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.BadQuantityException;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.dao.ArrayListProductDao;
+import com.es.phoneshop.model.product.dao.ProductDao;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -105,6 +105,18 @@ public class DefaultCartService implements CartService {
       Product product = productDao.getProduct(productId);
       CartItem cartItem = findItem(cart, product);
       cart.getCartItemList().remove(cartItem);
+      recalculateCart(cart);
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  @Override
+  public void clearCart(Cart cart) {
+    lock.lock();
+    try {
+      cart.getCartItemList().clear();
+      cart.setId(null);
       recalculateCart(cart);
     } finally {
       lock.unlock();

@@ -3,8 +3,8 @@ package com.es.phoneshop.web;
 import com.es.phoneshop.exception.BadQuantityException;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.exception.ProductNotFoundException;
-import com.es.phoneshop.model.service.CartService;
-import com.es.phoneshop.model.service.DefaultCartService;
+import com.es.phoneshop.model.cart.service.CartService;
+import com.es.phoneshop.model.cart.service.DefaultCartService;
 import com.es.phoneshop.web.helper.DefaultParseHelper;
 import com.es.phoneshop.web.helper.ParseHelper;
 
@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +60,7 @@ public class CartPageServlet extends HttpServlet {
           errors.put(Long.parseLong(productIds[i]), OUT_OF_STOCK_MESSAGE + exception.getStockAvailable());
         } catch (ParseException exception) {
           errors.put(Long.parseLong(productIds[i]), NOT_A_NUMBER_MESSAGE);
-        } catch (BadQuantityException e) {
+        } catch (BadQuantityException exception) {
           errors.put(Long.parseLong(productIds[i]), BAD_QUANTITY_MESSAGE);
         }
       }

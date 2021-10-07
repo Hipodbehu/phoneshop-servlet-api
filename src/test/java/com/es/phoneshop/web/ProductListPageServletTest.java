@@ -1,7 +1,8 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.ArrayListProductDao;
-import com.es.phoneshop.model.service.CartService;
+import com.es.phoneshop.model.cart.service.CartService;
+import com.es.phoneshop.model.product.dao.ArrayListProductDao;
+import com.es.phoneshop.web.helper.ParseHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
@@ -32,13 +32,14 @@ public class ProductListPageServletTest {
   private ArrayListProductDao productDao;
   @Mock
   private CartService cartService;
+  @Mock
+  private ParseHelper parseHelper;
   @InjectMocks
   private ProductListPageServlet servlet = new ProductListPageServlet();
 
   @Before
   public void setup() throws ServletException {
     when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-    when(request.getLocale()).thenReturn(new Locale("us"));
   }
 
   @Test

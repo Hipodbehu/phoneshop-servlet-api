@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<jsp:useBean id="cart" type="com.es.phoneshop.model.cart.Cart" scope="request"/>
 <tags:master pageTitle="Product List">
     <h1>
         Cart
@@ -71,8 +72,11 @@
                 <td class="quantity"><fmt:formatNumber value="${cart.totalQuantity}"/>
                 </td>
             </tr>
-        </table>
+        </table><br/>
         <button>Update</button>
+    </form>
+    <form action="${pageContext.servletContext.contextPath}/checkout">
+        <button>Checkout</button>
     </form>
     <form id="deleteCartItemForm" method="post"/>
     <jsp:include page="recentlyViewed.jsp"/>
