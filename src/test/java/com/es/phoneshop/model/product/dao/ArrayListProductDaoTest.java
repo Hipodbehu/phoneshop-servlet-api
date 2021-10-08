@@ -2,6 +2,7 @@ package com.es.phoneshop.model.product.dao;
 
 import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.search.SearchType;
 import com.es.phoneshop.model.sort.SortField;
 import com.es.phoneshop.model.sort.SortOrder;
 import org.junit.After;
@@ -151,5 +152,35 @@ public class ArrayListProductDaoTest {
     productDao.save(product);
     productDao.delete(product.getId());
     productDao.getProduct(product.getId());
+  }
+
+  @Test
+  public void testAdvancedSearch() {
+    List<Product> list = productDao.advancedSearchProducts(null, null, null, SearchType.ANY_WORD);
+    assertEquals(productList.size(), list.size());
+  }
+
+  @Test
+  public void testAdvancedSearchMinPrice() {
+    List<Product> list = productDao.advancedSearchProducts(null, BigDecimal.valueOf(110), null, SearchType.ANY_WORD);
+    assertEquals(productList.size() - 1, list.size());
+  }
+
+  @Test
+  public void testAdvancedSearchMaxPrice() {
+    List<Product> list = productDao.advancedSearchProducts(null, null, BigDecimal.valueOf(110), SearchType.ANY_WORD);
+    assertEquals(productList.size() - 2, list.size());
+  }
+
+  @Test
+  public void testAdvancedSearchPrice() {
+    List<Product> list = productDao.advancedSearchProducts(null, BigDecimal.valueOf(100), BigDecimal.valueOf(200), SearchType.ANY_WORD);
+    assertEquals(productList.size() - 1, list.size());
+  }
+
+  @Test
+  public void testAdvancedSearchAllWords() {
+    List<Product> list = productDao.advancedSearchProducts("Samsung Galaxy S III", null, null, SearchType.ALL_WORDS);
+    assertEquals(productList.size() - 2, list.size());
   }
 }
