@@ -12,6 +12,7 @@
         <input class="query" name="query" value="${param.query}"/>
         <button>Search</button>
     </form>
+    <a href="${pageContext.servletContext.contextPath}/products/advancedSearch">Advanced search</a>
     <c:if test="${not empty error}">
         <div class="error">
             ${error}

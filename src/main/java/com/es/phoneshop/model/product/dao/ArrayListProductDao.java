@@ -3,9 +3,11 @@ package com.es.phoneshop.model.product.dao;
 import com.es.phoneshop.dao.AbstractDao;
 import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.search.SearchType;
 import com.es.phoneshop.model.sort.SortField;
 import com.es.phoneshop.model.sort.SortOrder;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -51,6 +53,46 @@ public class ArrayListProductDao extends AbstractDao<Product> implements Product
     return productList;
   }
 
+  @Override
+  public List<Product> advancedSearchProducts(String description, BigDecimal minPrice, BigDecimal maxPrice, SearchType searchType) {
+    List<Product> products = getItemList();
+
+    products = filterProductsByMinPrice(products, minPrice);
+    products = filterProductsByMaxPrice(products, maxPrice);
+
+    if (description != null && !description.isEmpty()) {
+      String[] words = getQueryWords(description);
+      if (SearchType.ANY_WORD == searchType) {
+        products = products.stream()
+                .filter(product -> shouldDisplayProduct(words, product))
+                .collect(Collectors.toList());
+      } else {
+        products = products.stream()
+                .filter(product -> shouldDisplayProductAllWords(words, product))
+                .collect(Collectors.toList());
+      }
+    }
+    return products;
+  }
+
+  private List<Product> filterProductsByMinPrice(List<Product> products, BigDecimal minPrice) {
+    if (minPrice != null) {
+      products = products.stream()
+              .filter(product -> product.getPrice().compareTo(minPrice) >= 0)
+              .collect(Collectors.toList());
+    }
+    return products;
+  }
+
+  private List<Product> filterProductsByMaxPrice(List<Product> products, BigDecimal maxPrice) {
+    if (maxPrice != null) {
+      products = products.stream()
+              .filter(product -> product.getPrice().compareTo(maxPrice) <= 0)
+              .collect(Collectors.toList());
+    }
+    return products;
+  }
+
   private String[] getQueryWords(String query) {
     return (query == null || query.trim().isEmpty())
             ? null
@@ -60,6 +102,12 @@ public class ArrayListProductDao extends AbstractDao<Product> implements Product
   private boolean shouldDisplayProduct(String[] queryWords, Product product) {
     return queryWords == null
             || Arrays.stream(queryWords).anyMatch(
+            s -> product.getDescription().toLowerCase(Locale.ROOT).contains(s));
+  }
+
+  private boolean shouldDisplayProductAllWords(String[] queryWords, Product product) {
+    return queryWords == null
+            || Arrays.stream(queryWords).allMatch(
             s -> product.getDescription().toLowerCase(Locale.ROOT).contains(s));
   }
 
