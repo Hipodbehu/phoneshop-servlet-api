@@ -64,11 +64,11 @@ public class ArrayListProductDao extends AbstractDao<Product> implements Product
       String[] words = getQueryWords(description);
       if (SearchType.ANY_WORD == searchType) {
         products = products.stream()
-                .filter(product -> shouldDisplayProduct(words, product))
+                .filter(product -> shouldDisplayProductAdvanced(words, product))
                 .collect(Collectors.toList());
       } else {
         products = products.stream()
-                .filter(product -> shouldDisplayProductAllWords(words, product))
+                .filter(product -> shouldDisplayProductAllWordsAdvanced(words, product))
                 .collect(Collectors.toList());
       }
     }
@@ -102,13 +102,21 @@ public class ArrayListProductDao extends AbstractDao<Product> implements Product
   private boolean shouldDisplayProduct(String[] queryWords, Product product) {
     return queryWords == null
             || Arrays.stream(queryWords).anyMatch(
-            s -> product.getDescription().toLowerCase(Locale.ROOT).contains(s));
+            s ->product.getDescription().toLowerCase(Locale.ROOT).contains(s));
   }
 
-  private boolean shouldDisplayProductAllWords(String[] queryWords, Product product) {
+  private boolean shouldDisplayProductAdvanced(String[] queryWords, Product product) {
+    return queryWords == null
+            || Arrays.stream(queryWords).anyMatch(
+            s -> Arrays.stream(product.getDescription().toLowerCase(Locale.ROOT).split("\\s"))
+                    .anyMatch(s1 -> s1.equals(s)));
+  }
+
+  private boolean shouldDisplayProductAllWordsAdvanced(String[] queryWords, Product product) {
     return queryWords == null
             || Arrays.stream(queryWords).allMatch(
-            s -> product.getDescription().toLowerCase(Locale.ROOT).contains(s));
+            s -> Arrays.stream(product.getDescription().toLowerCase(Locale.ROOT).split("\\s"))
+                    .anyMatch(s1 -> s1.equals(s)));
   }
 
   private Comparator<Product> getSortFieldComparator(String[] query, SortField sortField) {
